@@ -5,7 +5,8 @@ Master MLSD – Abderrahmane BENAMARA
 Mini application **Spring Boot** (Java 17, Gradle) exposant un web service REST pour louer des voitures, conteneurisée avec **Docker** et publiée sur **Docker Hub**.
 
 - **Code source** : [TP1/](TP1/)
-- **Image Docker Hub** : https://hub.docker.com/r/benamaraabderrahmane/rental
+- **Image Docker Hub (application)** : https://hub.docker.com/r/benamaraabderrahmane/rental
+- **Image Docker Hub (Ubuntu + Java)** : https://hub.docker.com/r/benamaraabderrahmane/ubuntu-java
 
 ---
 
@@ -122,3 +123,31 @@ docker push benamaraabderrahmane/rental:latest
 ```
 
 Image publiée : https://hub.docker.com/r/benamaraabderrahmane/rental
+
+---
+
+## 5. Image Ubuntu + Java construite à la main (`docker commit`)
+
+Image publiée : https://hub.docker.com/r/benamaraabderrahmane/ubuntu-java
+
+Contrairement à l'image précédente (construite automatiquement avec un Dockerfile), celle-ci est créée **manuellement** : on modifie un conteneur, puis on fige son état en image.
+
+```bash
+# 1. Conteneur Ubuntu vide, en mode interactif
+docker run -it --name ubuntu-java ubuntu bash
+
+# 2. Dans le conteneur : installation de Java
+apt update
+apt install -y openjdk-17-jdk
+java -version            # openjdk version "17.0.21"
+exit
+
+# 3. Sur la machine hôte : le conteneur devient une image
+docker commit ubuntu-java benamaraabderrahmane/ubuntu-java:1.0
+
+# 4. Vérification : Java est présent dans l'image
+docker run --rm benamaraabderrahmane/ubuntu-java:1.0 java -version
+
+# 5. Publication
+docker push benamaraabderrahmane/ubuntu-java:1.0
+```
