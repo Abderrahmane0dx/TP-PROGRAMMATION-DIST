@@ -24,6 +24,18 @@ public class RentalWebService {
         return "hello";
     }
 
+    // list of unrented cars :
+    @GetMapping("/cars")
+    public List<Car> listOfCars() {
+        List<Car> available = new ArrayList<>();
+        for (Car car : cars) {
+            if (!car.isRented()) {
+                available.add(car);
+            }
+        }
+        return available;
+    }
+
     // get a car by its plate number :
     @GetMapping("/cars/{plateNumber}")
     public Car getCarFeatures(@PathVariable String plateNumber) {
@@ -43,6 +55,9 @@ public class RentalWebService {
         for (Car car : cars) {
             if (car.getPlateNumber().equals(plateNumber)) {
                 if (rent) {
+                    if (car.isRented()) {
+                        throw new ResponseStatusException(HttpStatus.CONFLICT, "Car " + plateNumber + " is already rented");
+                    }
                     if (dates == null) {
                         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Rental dates are required");
                     }
